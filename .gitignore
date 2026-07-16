@@ -1,0 +1,25 @@
+# 构建产物 (编译出的 DLL, EXE 等)
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+# 用户特定设置 (VS 自动生成的缓存和偏好)
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+
+# NuGet 包缓存 (通常不需要上传到 Git)
+packages/
+!packages/repositories.config
+
+# 单元测试覆盖率报告
+TestResults/
+*.coverage
+
+# 针对特定环境的配置文件 (可选，取决于你的部署策略)
+appsettings.Development.json
+appsettings.Local.json
