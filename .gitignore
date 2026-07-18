@@ -23,3 +23,5 @@ TestResults/
 # 针对特定环境的配置文件 (可选，取决于你的部署策略)
 appsettings.Development.json
 appsettings.Local.json
+# 忽略该 bin 文件夹下的所有内容
+301379036(chen)lab3/bin/

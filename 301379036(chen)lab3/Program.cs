@@ -16,7 +16,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<App
 
 builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.AddScoped<S3Service>();
-
+builder.Services.AddDefaultAWSOptions(
+    builder.Configuration.GetAWSOptions()
+);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

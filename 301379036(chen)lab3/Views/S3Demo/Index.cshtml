@@ -1,0 +1,151 @@
+﻿@{
+    ViewData["Title"] = "S3 Service Demo";
+}
+
+<div class="container mt-4">
+    <h1>S3 Service Demo</h1>
+
+    <p class="text-muted">
+        Use this page to test uploading, deleting, and replacing
+        episode audio/video files in Amazon S3.
+    </p>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (TempData["FileUrl"] != null)
+    {
+        <div class="alert alert-info">
+            <strong>Returned S3 URL:</strong>
+
+            <div class="mt-2">
+                <a href="@TempData["FileUrl"]"
+                   target="_blank">
+                    @TempData["FileUrl"]
+                </a>
+            </div>
+        </div>
+    }
+
+    <hr />
+
+    <section class="mb-5">
+        <h2>1. Upload File</h2>
+
+        <form asp-controller="S3Demo"
+              asp-action="Upload"
+              method="post"
+              enctype="multipart/form-data">
+
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label for="mediaFile"
+                       class="form-label">
+                    Select audio/video file
+                </label>
+
+                <input type="file"
+                       id="mediaFile"
+                       name="mediaFile"
+                       class="form-control"
+                       accept="audio/*,video/*"
+                       required />
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary">
+                Upload to S3
+            </button>
+        </form>
+    </section>
+
+    <hr />
+
+    <section class="mb-5">
+        <h2>2. Delete File</h2>
+
+        <form asp-controller="S3Demo"
+              asp-action="Delete"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label for="deleteKeyOrUrl"
+                       class="form-label">
+                    S3 URL or object key
+                </label>
+
+                <input type="text"
+                       id="deleteKeyOrUrl"
+                       name="keyOrUrl"
+                       class="form-control"
+                       placeholder="https://bucket.s3.ca-central-1.amazonaws.com/episodes/.../file.mp3"
+                       required />
+            </div>
+
+            <button type="submit"
+                    class="btn btn-danger">
+                Delete from S3
+            </button>
+        </form>
+    </section>
+
+    <hr />
+
+    <section class="mb-5">
+        <h2>3. Replace File</h2>
+
+        <form asp-controller="S3Demo"
+              asp-action="Replace"
+              method="post"
+              enctype="multipart/form-data">
+
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label for="oldKeyOrUrl"
+                       class="form-label">
+                    Old S3 URL or object key
+                </label>
+
+                <input type="text"
+                       id="oldKeyOrUrl"
+                       name="oldKeyOrUrl"
+                       class="form-control"
+                       required />
+            </div>
+
+            <div class="mb-3">
+                <label for="newMediaFile"
+                       class="form-label">
+                    Select replacement file
+                </label>
+
+                <input type="file"
+                       id="newMediaFile"
+                       name="newMediaFile"
+                       class="form-control"
+                       accept="audio/*,video/*"
+                       required />
+            </div>
+
+            <button type="submit"
+                    class="btn btn-warning">
+                Replace File
+            </button>
+        </form>
+    </section>
+</div>
