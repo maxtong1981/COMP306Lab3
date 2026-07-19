@@ -1,0 +1,84 @@
+﻿@model _301379036_chen_lab3.Models.CommentsModel
+
+@{
+    ViewData["Title"] = "Edit Comment";
+
+    string currentUserId = ViewBag.CurrentUserId as string ?? string.Empty;
+}
+
+<div class="container mt-4">
+    <h1>Edit Comment</h1>
+
+    <div class="alert alert-info">
+        A comment can only be edited by its owner and within
+        24 hours of its creation time.
+    </div>
+
+    <form asp-controller="CommentsDemo"
+          asp-action="Edit"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               name="episodeId"
+               value="@Model.EpisodeId" />
+
+        <input type="hidden"
+               name="commentId"
+               value="@Model.CommentId" />
+
+        <input type="hidden"
+               name="currentUserId"
+               value="@currentUserId" />
+
+        <div class="mb-3">
+            <label class="form-label">
+                Comment ID
+            </label>
+
+            <input type="text"
+                   value="@Model.CommentId"
+                   class="form-control"
+                   readonly />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">
+                Current User ID
+            </label>
+
+            <input type="text"
+                   value="@currentUserId"
+                   class="form-control"
+                   readonly />
+        </div>
+
+        <div class="mb-3">
+            <label for="text"
+                   class="form-label">
+                Comment
+            </label>
+
+            <textarea id="text"
+                      name="text"
+                      class="form-control"
+                      rows="5"
+                      maxlength="2000"
+                      required>@Model.Text</textarea>
+        </div>
+
+        <button type="submit"
+                class="btn btn-primary">
+            Save Changes
+        </button>
+
+        <a asp-controller="CommentsDemo"
+           asp-action="Index"
+           asp-route-episodeId="@Model.EpisodeId"
+           asp-route-currentUserId="@currentUserId"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+</div>

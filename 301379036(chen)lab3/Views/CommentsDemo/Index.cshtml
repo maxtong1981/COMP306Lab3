@@ -1,0 +1,246 @@
+﻿@model IReadOnlyList<_301379036_chen_lab3.Models.CommentsModel>
+
+@{
+    ViewData["Title"] = "DynamoDB Comments Demo";
+
+    string episodeId =
+        ViewBag.EpisodeId is string id ? id : "1";
+
+    string currentUserId =
+        ViewBag.CurrentUserId is string userId ? userId : "1";
+}
+
+<div class="container mt-4">
+    <h1>DynamoDB Comments Demo</h1>
+
+    <p class="text-muted">
+        This page demonstrates adding, listing, ownership checking,
+        and editing comments within 24 hours.
+    </p>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Load Comments
+        </div>
+
+        <div class="card-body">
+            <form asp-controller="CommentsDemo"
+                  asp-action="Index"
+                  method="get"
+                  class="row g-3">
+
+                <div class="col-md-4">
+                    <label for="loadEpisodeId"
+                           class="form-label">
+                        Episode ID
+                    </label>
+
+                    <input type="number"
+                           id="loadEpisodeId"
+                           name="episodeId"
+                           value="@episodeId"
+                           min="1"
+                           class="form-control"
+                           required />
+                </div>
+
+                <div class="col-md-4">
+                    <label for="loadCurrentUserId"
+                           class="form-label">
+                        Current User ID
+                    </label>
+
+                    <input type="number"
+                           id="loadCurrentUserId"
+                           name="currentUserId"
+                           value="@currentUserId"
+                           min="1"
+                           class="form-control"
+                           required />
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit"
+                            class="btn btn-secondary">
+                        Load Comments
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Add Comment
+        </div>
+
+        <div class="card-body">
+            <form asp-controller="CommentsDemo"
+                  asp-action="Add"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="episodeId"
+                               class="form-label">
+                            Episode ID
+                        </label>
+
+                        <input type="number"
+                               id="episodeId"
+                               name="episodeId"
+                               value="@episodeId"
+                               min="1"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="podcastId"
+                               class="form-label">
+                            Podcast ID
+                        </label>
+
+                        <input type="number"
+                               id="podcastId"
+                               name="podcastId"
+                               value="1"
+                               min="1"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="userId"
+                               class="form-label">
+                            User ID
+                        </label>
+
+                        <input type="number"
+                               id="userId"
+                               name="userId"
+                               value="@currentUserId"
+                               min="1"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="col-12">
+                        <label for="text"
+                               class="form-label">
+                            Comment
+                        </label>
+
+                        <textarea id="text"
+                                  name="text"
+                                  class="form-control"
+                                  rows="3"
+                                  maxlength="2000"
+                                  required></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <button type="submit"
+                                class="btn btn-primary">
+                            Add Comment
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <h2>
+        Comments for Episode @episodeId
+    </h2>
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">
+            No comments were found for this episode.
+        </div>
+    }
+    else
+    {
+        @foreach (var comment in Model)
+        {
+            bool isOwner =
+                string.Equals(
+                    comment.UserId,
+                    currentUserId,
+                    StringComparison.Ordinal
+                );
+
+            bool isWithin24Hours =
+                DateTime.UtcNow - comment.Timestamp.ToUniversalTime()
+                < TimeSpan.FromHours(24);
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p class="card-text">
+                        @comment.Text
+                    </p>
+
+                    <dl class="row mb-2">
+                        <dt class="col-sm-3">Comment ID</dt>
+                        <dd class="col-sm-9">@comment.CommentId</dd>
+
+                        <dt class="col-sm-3">Podcast ID</dt>
+                        <dd class="col-sm-9">@comment.PodcastId</dd>
+
+                        <dt class="col-sm-3">Episode ID</dt>
+                        <dd class="col-sm-9">@comment.EpisodeId</dd>
+
+                        <dt class="col-sm-3">User ID</dt>
+                        <dd class="col-sm-9">@comment.UserId</dd>
+
+                        <dt class="col-sm-3">Created at</dt>
+                        <dd class="col-sm-9">
+                            @comment.Timestamp.ToUniversalTime().ToString("u")
+                        </dd>
+                    </dl>
+
+                    @if (isOwner && isWithin24Hours)
+                    {
+                        <a asp-controller="CommentsDemo"
+                           asp-action="Edit"
+                           asp-route-episodeId="@comment.EpisodeId"
+                           asp-route-commentId="@comment.CommentId"
+                           asp-route-currentUserId="@currentUserId"
+                           class="btn btn-sm btn-warning">
+                            Edit Comment
+                        </a>
+                    }
+                    else if (!isOwner)
+                    {
+                        <span class="badge bg-secondary">
+                            Not owned by current user
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">
+                            Edit period expired
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
